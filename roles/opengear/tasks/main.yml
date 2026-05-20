@@ -13,6 +13,7 @@
           confirm_password: "{{ ansible_password }}"
         validate_certs: false
         return_content: true
+        status_code: [200]
       register: auth_response
 
   rescue:
@@ -27,8 +28,9 @@
           password: "{{ ansible_password }}"
         validate_certs: false
         return_content: true
+        status_code: [200, 303]
       register: auth_response
 
 - name: Save API token
   set_fact:
-    api_token: "{{ auth_response.json.token }}"
+    api_token: "{{ auth_response.json.token | default(auth_response.json.sid) }}"
