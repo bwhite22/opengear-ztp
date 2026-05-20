@@ -1,6 +1,8 @@
-- name: Opengear ZTP
+- name: Opengear ZTP TEST
   hosts: opengear
   gather_facts: no
 
-  roles:
-    - opengear
+  tasks:
+    - name: PROOF TASK
+      debug:
+        msg: "PLAYBOOK IS EXECUTING"
