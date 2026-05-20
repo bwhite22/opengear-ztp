@@ -34,7 +34,7 @@
 - name: Save API token
   set_fact:
     api_token: "{{ auth_response.json.token | default(auth_response.json.sid) }}"
- 
+
 - name: Set hostname
   uri:
     url: "{{ base_url }}/system/hostname"
@@ -46,10 +46,12 @@
       system_hostname:
         hostname: "{{ inventory_hostname }}"
     validate_certs: false
-    
+
 - name: Get WWAN config
   command: ogcli get physif wwan0
   register: wwan_config
+  changed_when: false
+  failed_when: false
 
 - name: Set APN if needed
   shell: |
@@ -61,3 +63,7 @@
 - name: Enable WWAN0 if needed
   command: ogcli update physif wwan0 enabled=true
   when: "'enabled = true' not in wwan_config.stdout"
+
+- name: Wait for modem (non-fatal)
+  pause:
+    seconds: 5
