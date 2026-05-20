@@ -1,2 +1,34 @@
-- name: Test SSH connectivity
-  command: hostname
+- name: Authenticate to Opengear (fallback logic)
+  block:
+
+    - name: Attempt default password reset
+      uri:
+        url: "{{ base_url }}/sessions"
+        method: POST
+        body_format: json
+        body:
+          username: root
+          password: default
+          new_password: "{{ ansible_password }}"
+          confirm_password: "{{ ansible_password }}"
+        validate_certs: false
+        return_content: true
+      register: auth_response
+
+  rescue:
+
+    - name: Fallback to normal login
+      uri:
+        url: "{{ base_url }}/sessions"
+        method: POST
+        body_format: json
+        body:
+          username: root
+          password: "{{ ansible_password }}"
+        validate_certs: false
+        return_content: true
+      register: auth_response
+
+- name: Save API token
+  set_fact:
+    api_token: "{{ auth_response.json.token }}"
