@@ -1,0 +1,8 @@
+- name: Opengear ZTP
+  hosts: opengear
+  gather_facts: no
+
+  tasks:
+    - name: Load Opengear role
+      include_role:
+        name: opengear
