@@ -1,0 +1,2 @@
+- name: Test SSH connectivity
+  command: hostname

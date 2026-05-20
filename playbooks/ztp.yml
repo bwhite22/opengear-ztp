@@ -1,0 +1,6 @@
+- name: Opengear ZTP
+  hosts: opengear
+  gather_facts: no
+
+  roles:
+    - opengear
