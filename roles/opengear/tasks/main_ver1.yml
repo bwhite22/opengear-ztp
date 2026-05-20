@@ -34,15 +34,3 @@
 - name: Save API token
   set_fact:
     api_token: "{{ auth_response.json.token | default(auth_response.json.sid) }}"
- 
-- name: Set hostname
-  uri:
-    url: "{{ base_url }}/system/hostname"
-    method: PUT
-    headers:
-      token: "{{ api_token }}"
-    body_format: json
-    body:
-      system_hostname:
-        hostname: "{{ inventory_hostname }}"
-    validate_certs: false
