@@ -48,7 +48,10 @@
         confirm_password: "{{ ansible_password }}"
     validate_certs: false
   register: password_update
-  failed_when: false
+
+- name: Show password API response
+  debug:
+    var: password_update
   
 - name: Set hostname
   uri:
