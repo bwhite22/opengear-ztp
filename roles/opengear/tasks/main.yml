@@ -35,6 +35,21 @@
   set_fact:
     api_token: "{{ auth_response.json.token | default(auth_response.json.sid) }}"
 
+- name: Ensure root password is set
+  uri:
+    url: "{{ base_url }}/system/users/root"
+    method: PUT
+    headers:
+      token: "{{ api_token }}"
+    body_format: json
+    body:
+      user:
+        password: "{{ ansible_password }}"
+        confirm_password: "{{ ansible_password }}"
+    validate_certs: false
+  register: password_update
+  failed_when: false
+  
 - name: Set hostname
   uri:
     url: "{{ base_url }}/system/hostname"
