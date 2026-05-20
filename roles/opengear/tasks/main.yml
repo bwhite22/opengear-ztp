@@ -46,3 +46,18 @@
       system_hostname:
         hostname: "{{ inventory_hostname }}"
     validate_certs: false
+    
+- name: Get WWAN config
+  command: ogcli get physif wwan0
+  register: wwan_config
+
+- name: Set APN if needed
+  shell: |
+    ogcli update physif wwan0 << EOF
+    cellular_setting.apn="{{ apn }}"
+    EOF
+  when: apn not in wwan_config.stdout
+
+- name: Enable WWAN0 if needed
+  command: ogcli update physif wwan0 enabled=true
+  when: "'enabled = true' not in wwan_config.stdout"
