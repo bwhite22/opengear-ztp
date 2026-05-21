@@ -23,19 +23,19 @@
   register: auth_response
   failed_when: false
 
-    - name: Fallback to normal login
-      uri:
-        url: "{{ base_url }}/sessions"
-        method: POST
-        body_format: json
-        body:
-          username: root
-          password: "{{ ansible_password }}"
-        validate_certs: false
-        return_content: true
-      when: auth_response.status != 200
-      register: auth_response
+- name: Fallback to normal login
+  uri:
+    url: "{{ base_url }}/sessions"
+    method: POST
+    body_format: json
+    body:
+      username: root
+      password: "{{ ansible_password }}"
+    validate_certs: false
+    return_content: true
+  when: auth_response.status != 200
+  register: auth_response
 
-    - name: Save API token
-      set_fact:
-        api_token: "{{ auth_response.json.token | default(auth_response.json.sid) }}"
+- name: Save API token
+  set_fact:
+    api_token: "{{ auth_response.json.token | default(auth_response.json.sid) }}"
