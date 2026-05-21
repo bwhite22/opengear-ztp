@@ -3,7 +3,7 @@
 
     - name: Attempt default password reset
       uri:
-        url: "{{ base_url }}/sessions"
+        url: "{{ device_ip }}/sessions"
         method: POST
         body_format: json
         body:
@@ -20,7 +20,7 @@
 
     - name: Fallback to normal login
       uri:
-        url: "{{ base_url }}/sessions"
+        url: "{{ device_ip }}/sessions"
         method: POST
         body_format: json
         body:
@@ -37,7 +37,7 @@
 
 - name: Ensure root password is set
   uri:
-    url: "{{ base_url }}/system/users/root"
+    url: "{{ device_ip }}/system/users/root"
     method: PUT
     headers:
       token: "{{ api_token }}"
@@ -55,7 +55,7 @@
   
 - name: Set hostname
   uri:
-    url: "{{ base_url }}/system/hostname"
+    url: "{{ device_ip }}/system/hostname"
     method: PUT
     headers:
       token: "{{ api_token }}"
