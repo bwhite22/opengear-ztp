@@ -1,21 +1,16 @@
 - name: Ensure root password is set
   uri:
     url: "{{ base_url }}/system/users/root"
-    method: PUT    
-    cookies: "{{ hostvars['localhost']['default_auth'].cookies
-                 | default(hostvars['localhost']['fallback_auth'].cookies) }}"
-    #headers:
-      #token: "{{ api_token }}"
+    method: PUT
+    headers:
+      Cookie: "sid={{ hostvars['localhost']['api_token'] }}"
     body_format: json
     body:
-      user:
-        password: "{{ ansible_password }}"
-        confirm_password: "{{ ansible_password }}"
+      password: "{{ ansible_password }}"
+      confirm_password: "{{ ansible_password }}"
     validate_certs: false
     return_content: true
     timeout: 10
-  register: password_update
-  failed_when: false
 
 - name: Show password API response
   debug:
@@ -25,19 +20,15 @@
   uri:
     url: "{{ base_url }}/system/hostname"
     method: PUT
-    cookies: >-
-      {{
-        (hostvars['localhost']['default_auth'].cookies | default({}))
-        if (hostvars['localhost']['default_auth'] is defined and
-            hostvars['localhost']['default_auth'].cookies is defined)
-        else
-            (hostvars['localhost']['fallback_auth'].cookies | default({}))
-      }}
+    headers:
+      Cookie: "sid={{ hostvars['localhost']['api_token'] }}"
     body_format: json
     body:
       system_hostname:
         hostname: "{{ device_hostname }}"
     validate_certs: false
+    return_content: true
+    timeout: 10
 
 - name: Get WWAN config
   command: ogcli get physif wwan0
