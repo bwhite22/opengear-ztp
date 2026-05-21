@@ -91,6 +91,17 @@
       fail:
         msg: "API token (sid) was not set — authentication failed"
       when: api_token is not defined
+      
+    - name: Activate Opengear session
+      uri:
+        url: "{{ base_url }}/sessions/self"
+        method: GET
+        headers:
+          Cookie: "sid={{ api_token }}"
+        validate_certs: false
+        return_content: true
+        timeout: 10
+        status_code: [200]
     
     - name: Add dynamic target host
       add_host:
