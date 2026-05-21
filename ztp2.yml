@@ -6,21 +6,22 @@
   vars:
     base_url: "https://{{ hostvars['og1'].ansible_host }}/api/v2"
 
-  tasks:
-    - name: Attempt default password reset
-      uri:
-        url: "{{ base_url }}/sessions"
-        method: POST
-        body_format: json
-        body:
-          username: root
-          password: default
-          new_password: "{{ ansible_password }}"
-          confirm_password: "{{ ansible_password }}"
-        validate_certs: false
-        return_content: true
-      register: auth_response
-      failed_when: false
+- name: Attempt default password reset
+  uri:
+    url: "{{ base_url }}/sessions"
+    method: POST
+    body_format: json
+    body:
+      username: root
+      password: default
+      new_password: "{{ ansible_password }}"
+      confirm_password: "{{ ansible_password }}"
+    validate_certs: false
+    return_content: true
+    timeout: 10
+    status_code: [200, 401]
+  register: auth_response
+  failed_when: false
 
     - name: Fallback to normal login
       uri:
