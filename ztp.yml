@@ -1,8 +1,70 @@
-- name: Opengear ZTP
-  hosts: opengear
+- name: Opengear ZTP Bootstrap
+  hosts: localhost
+  connection: local
   gather_facts: no
 
+  vars:
+    base_url: "https://{{ hostvars['og1'].ansible_host }}/api/v2"
+
   tasks:
-    - name: Load Opengear role
-      include_role:
-        name: opengear
+    - name: Test API connectivity
+      command: >
+        curl -k -m 5 "https://{{ hostvars['og1'].ansible_host }}/api/v2"
+      register: curl_test
+      changed_when: false
+      failed_when: false
+
+    - name: Show curl output
+      debug:
+        var: curl_test
+
+    - name: Attempt default password reset
+      uri:
+        url: "{{ base_url }}/sessions"
+        method: POST
+        body_format: json
+        body:
+          username: root
+          password: default
+          new_password: "{{ ansible_password }}"
+          confirm_password: "{{ ansible_password }}"
+        validate_certs: false
+        return_content: true
+        timeout: 10
+        status_code: [200, 401]
+      register: default_auth
+      failed_when: false
+
+    - name: Show default auth response
+      debug:
+        var: default_auth
+
+    - name: Fallback to normal login
+      uri:
+        url: "{{ base_url }}/sessions"
+        method: POST
+        body_format: json
+        body:
+          username: root
+          password: "{{ ansible_password }}"
+        validate_certs: false
+        return_content: true
+        timeout: 10
+        status_code: [200, 303]
+      when: default_auth.status != 200
+      register: fallback_auth
+
+    - name: Show fallback auth response
+      debug:
+        var: fallback_auth
+      when: default_auth.status != 200
+
+    - name: Save API token
+      set_fact:
+        api_token: >-
+          {{
+            default_auth.json.token
+            | default(default_auth.json.sid)
+            | default(fallback_auth.json.token)
+            | default(fallback_auth.json.sid)
+          }}
