@@ -61,6 +61,15 @@
         var: fallback_auth
       when: (default_auth.status_code | default(0)) != 200
 
+    - name: DEBUG default_auth full
+      debug:
+        var: default_auth
+
+    - name: DEBUG fallback_auth full
+      debug:
+        var: fallback_auth
+      when: fallback_auth is defined
+  
     - name: Save API token from fallback auth (primary path)
       set_fact:
         api_token: "{{ fallback_auth.json.sid }}"
