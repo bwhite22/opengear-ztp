@@ -68,11 +68,20 @@
         api_token: >-
           {{
             default_auth.json.token
-            | default(default_auth.json.sid)
-            | default(fallback_auth.json.token)
-            | default(fallback_auth.json.sid)
+            if (default_auth.json is defined and default_auth.json.token is defined)
+            else
+            (
+              default_auth.json.sid
+              if (default_auth.json is defined and default_auth.json.sid is defined)
+              else
+              (
+                fallback_auth.json.token
+                if (fallback_auth is defined and fallback_auth.json.token is defined)
+                else
+                fallback_auth.json.sid
+              )
+            )
           }}
-          
     
     - name: Add dynamic target host
       add_host:
