@@ -32,7 +32,7 @@
         return_content: true
         timeout: 10
         status_code: [200, 401]
-        follow_redirects: all
+        follow_redirects: none
       register: default_auth
       failed_when: false
 
@@ -52,7 +52,7 @@
         return_content: true
         timeout: 10
         status_code: [200, 303]
-        follow_redirects: all
+        follow_redirects: none
       when: (default_auth.status_code | default(0)) != 200
       register: fallback_auth
 
