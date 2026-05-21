@@ -63,25 +63,40 @@
         var: fallback_auth
       when: (default_auth.status_code | default(0)) != 200
 
-    - name: Save API token
+    - name: Save API token from default auth (if present)
       set_fact:
-        api_token: >-
-          {{
-            default_auth.json.token
-            if (default_auth.json is defined and default_auth.json.token is defined)
-            else
-            (
-              default_auth.json.sid
-              if (default_auth.json is defined and default_auth.json.sid is defined)
-              else
-              (
-                fallback_auth.json.token
-                if (fallback_auth is defined and fallback_auth.json.token is defined)
-                else
-                fallback_auth.json.sid
-              )
-            )
-          }}
+        api_token: "{{ default_auth.json.token }}"
+      when:
+        - default_auth is defined
+        - default_auth.json is defined
+        - default_auth.json.token is defined
+
+    - name: Save API SID from default auth (if no token)
+      set_fact:
+        api_token: "{{ default_auth.json.sid }}"
+      when:
+        - api_token is not defined
+        - default_auth is defined
+        - default_auth.json is defined
+        - default_auth.json.sid is defined
+
+    - name: Save API token from fallback auth (if present)
+      set_fact:
+        api_token: "{{ fallback_auth.json.token }}"
+      when:
+        - api_token is not defined
+        - fallback_auth is defined
+        - fallback_auth.json is defined
+        - fallback_auth.json.token is defined
+
+    - name: Save API SID from fallback auth (last resort)
+      set_fact:
+        api_token: "{{ fallback_auth.json.sid }}"
+      when:
+        - api_token is not defined
+        - fallback_auth is defined
+        - fallback_auth.json is defined
+        - fallback_auth.json.sid is defined
     
     - name: Add dynamic target host
       add_host:
