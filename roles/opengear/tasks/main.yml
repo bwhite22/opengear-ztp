@@ -1,17 +1,3 @@
-- name: Ensure root password is set
-  uri:
-    url: "{{ base_url }}/system/users/root"
-    method: PUT
-    headers:
-      Cookie: "sid={{ hostvars['localhost']['api_token'] }}"
-    body_format: json
-    body:
-      password: "{{ ansible_password }}"
-      confirm_password: "{{ ansible_password }}"
-    validate_certs: false
-    return_content: true
-    timeout: 10
-
 - name: Show password API response
   debug:
     var: password_update
