@@ -7,7 +7,7 @@
     url: "{{ base_url }}/system/hostname"
     method: PUT
     headers:
-      Cookie: "sid={{ hostvars['localhost']['api_token'] }}"
+      Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
     body_format: json
     body:
       system_hostname:
