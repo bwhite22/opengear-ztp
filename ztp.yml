@@ -54,7 +54,7 @@
         timeout: 10
         status_code: [200, 303]
         follow_redirects: all
-        use_cookies: true
+        #use_cookies: true
       when: (default_auth.status_code | default(0)) != 200
       register: fallback_auth
 

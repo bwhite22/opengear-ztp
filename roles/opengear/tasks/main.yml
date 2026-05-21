@@ -25,8 +25,14 @@
   uri:
     url: "{{ base_url }}/system/hostname"
     method: PUT
-    cookies: "{{ hostvars['localhost']['default_auth'].cookies
-                 | default(hostvars['localhost']['fallback_auth'].cookies) }}"
+    cookies: >-
+      {{
+        (hostvars['localhost']['default_auth'].cookies | default({}))
+        if (hostvars['localhost']['default_auth'] is defined and
+            hostvars['localhost']['default_auth'].cookies is defined)
+        else
+        (hostvars['localhost']['fallback_auth'].cookies | default({}))
+      }}
     #headers:
       #token: "{{ api_token }}"
       #Cookie: "sid={{ api_token }}"
