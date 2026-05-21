@@ -4,12 +4,12 @@
   gather_facts: no
 
   vars:
-    base_url: "https://{{ hostvars['og1'].ansible_host }}/api/v2"
+    base_url: "https://{{ device_ip }}/api/v2"
 
   tasks:
     - name: Test API connectivity
       command: >
-        curl -k -m 5 "https://{{ hostvars['og1'].ansible_host }}/api/v2"
+        curl -k -m 5 "https://{{ device_ip }}/api/v2"
       register: curl_test
       changed_when: false
       failed_when: false
@@ -68,3 +68,21 @@
             | default(fallback_auth.json.token)
             | default(fallback_auth.json.sid)
           }}
+          
+    
+    - name: Add dynamic target host
+      add_host:
+        name: og_dynamic
+        ansible_host: "{{ device_ip }}"
+        ansible_user: root
+        ansible_password: "{{ ansible_password }}"
+        
+
+- name: Opengear ZTP Configuration
+  hosts: og_dynamic
+  gather_facts: no
+
+  tasks:
+    - name: Load Opengear role
+      include_role:
+        name: opengear
