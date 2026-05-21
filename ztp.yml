@@ -80,13 +80,11 @@
         ansible_host: "{{ device_ip }}"
         ansible_user: root
         ansible_password: "{{ ansible_password }}"
-      when: (default_auth.status_code | default(0)) != 200
-      
+        
     - name: Show target device
       debug:
         msg: "Provisioning device {{ device_ip }}"
-      when: (default_auth.status_code | default(0)) != 200
-      
+    
 - name: Opengear ZTP Configuration
   hosts: og_dynamic
   gather_facts: no
