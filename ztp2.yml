@@ -7,6 +7,17 @@
     base_url: "https://{{ hostvars['og1'].ansible_host }}/api/v2"
 
   tasks:
+    - name: Test API connectivity
+      command: >
+        curl -k -m 5 "https://{{ hostvars['og1'].ansible_host }}/api/v2"
+      register: curl_test
+      changed_when: false
+      failed_when: false
+
+    - name: Show curl output
+      debug:
+        var: curl_test
+
     - name: Attempt default password reset
       uri:
         url: "{{ base_url }}/sessions"
@@ -21,8 +32,12 @@
         return_content: true
         timeout: 10
         status_code: [200, 401]
-      register: auth_response
+      register: default_auth
       failed_when: false
+
+    - name: Show default auth response
+      debug:
+        var: default_auth
 
     - name: Fallback to normal login
       uri:
@@ -36,9 +51,20 @@
         return_content: true
         timeout: 10
         status_code: [200, 303]
-      when: auth_response.status != 200
-      register: auth_response
+      when: default_auth.status != 200
+      register: fallback_auth
+
+    - name: Show fallback auth response
+      debug:
+        var: fallback_auth
+      when: default_auth.status != 200
 
     - name: Save API token
       set_fact:
-        api_token: "{{ auth_response.json.token | default(auth_response.json.sid) }}"
+        api_token: >-
+          {{
+            default_auth.json.token
+            | default(default_auth.json.sid)
+            | default(fallback_auth.json.token)
+            | default(fallback_auth.json.sid)
+          }}
