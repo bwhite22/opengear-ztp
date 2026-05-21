@@ -61,7 +61,7 @@
     - name: Show fallback auth response
       debug:
         var: fallback_auth
-      when: default_auth.status != 200
+      when: (default_auth.status_code | default(0)) != 200
 
     - name: Save API token
       set_fact:
