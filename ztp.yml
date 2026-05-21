@@ -97,7 +97,7 @@
         url: "{{ base_url }}/sessions/self"
         method: GET
         headers:
-          Cookie: "sid={{ api_token }}"
+          Cookie: "session_id={{ api_token }}"
         validate_certs: false
         return_content: true
         timeout: 10
