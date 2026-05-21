@@ -28,7 +28,8 @@
     body_format: json
     body:
       system_hostname:
-        hostname: "{{ inventory_hostname }}"
+        #hostname: "{{ inventory_hostname }}"
+        hostname: "{{ device_hostname }}"
     validate_certs: false
 
 - name: Get WWAN config
