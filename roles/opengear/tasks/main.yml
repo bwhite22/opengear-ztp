@@ -31,15 +31,11 @@
         if (hostvars['localhost']['default_auth'] is defined and
             hostvars['localhost']['default_auth'].cookies is defined)
         else
-        (hostvars['localhost']['fallback_auth'].cookies | default({}))
+            (hostvars['localhost']['fallback_auth'].cookies | default({}))
       }}
-    #headers:
-      #token: "{{ api_token }}"
-      #Cookie: "sid={{ api_token }}"
     body_format: json
     body:
       system_hostname:
-        #hostname: "{{ inventory_hostname }}"
         hostname: "{{ device_hostname }}"
     validate_certs: false
 
