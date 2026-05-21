@@ -77,7 +77,10 @@
         ansible_user: root
         ansible_password: "{{ ansible_password }}"
         
-
+    - name: Show target device
+      debug:
+        msg: "Provisioning device {{ device_ip }}"
+    
 - name: Opengear ZTP Configuration
   hosts: og_dynamic
   gather_facts: no
