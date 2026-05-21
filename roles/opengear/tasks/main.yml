@@ -1,9 +1,11 @@
 - name: Ensure root password is set
   uri:
     url: "{{ base_url }}/system/users/root"
-    method: PUT
-    headers:
-      token: "{{ api_token }}"
+    method: PUT    
+    cookies: "{{ hostvars['localhost']['default_auth'].cookies
+                 | default(hostvars['localhost']['fallback_auth'].cookies) }}"
+    #headers:
+      #token: "{{ api_token }}"
     body_format: json
     body:
       user:
@@ -23,9 +25,11 @@
   uri:
     url: "{{ base_url }}/system/hostname"
     method: PUT
-    headers:
+    cookies: "{{ hostvars['localhost']['default_auth'].cookies
+                 | default(hostvars['localhost']['fallback_auth'].cookies) }}"
+    #headers:
       #token: "{{ api_token }}"
-      Cookie: "sid={{ api_token }}"
+      #Cookie: "sid={{ api_token }}"
     body_format: json
     body:
       system_hostname:
