@@ -24,7 +24,8 @@
     url: "{{ base_url }}/system/hostname"
     method: PUT
     headers:
-      token: "{{ api_token }}"
+      #token: "{{ api_token }}"
+      Cookie: "sid={{ api_token }}"
     body_format: json
     body:
       system_hostname:
