@@ -88,6 +88,8 @@
 
   vars:
     base_url: "https://{{ device_ip }}/api/v2"
+    api_token: "{{ hostvars['localhost']['api_token'] }}"
+
 
   tasks:
     - name: Load Opengear role
