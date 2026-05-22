@@ -73,9 +73,13 @@
     method: PUT
     headers:
       Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
-    body_format: json
-    body:
-      timezone: "{{ timezone }}"
+      Content-Type: "application/json"
+    body: |
+      {
+        "system_timezone": {
+          "timezone": "{{ timezone }}"
+        }
+      }
     validate_certs: false
     return_content: true
     timeout: 10
