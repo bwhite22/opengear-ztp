@@ -16,6 +16,193 @@
     return_content: true
     timeout: 10
 
+- name: Enroll in Lighthouse
+  uri:
+    url: "{{ base_url }}/lighthouse_enrollments"
+    method: POST
+    headers:
+      Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
+    body_format: json
+    body: {}
+    validate_certs: false
+    return_content: true
+    timeout: 10
+
+- name: Configure NTP
+  uri:
+    url: "{{ base_url }}/services/ntp"
+    method: PUT
+    headers:
+      Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
+    body_format: json
+    body:
+      ntp:
+        enabled: true
+        servers:
+          - value: "{{ ntp_server | default('192.168.122.14') }}"
+            key:
+              value: wuw8Ewrlvot
+            index: 777
+            format: ASCII
+            algorithm: MD5
+    validate_certs: false
+    return_content: true
+    timeout: 10
+    
+- name: Set timezone
+  uri:
+    url: "{{ base_url }}/system/timezone"
+    method: PUT
+    headers:
+      Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
+    body_format: json
+    body:
+      timezone: "{{ timezone }}"
+    validate_certs: false
+    return_content: true
+    timeout: 10
+
+- name: Configure SNMPv3
+  uri:
+    url: "{{ base_url }}/services/snmpd"
+    method: PUT
+    headers:
+      Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
+    body_format: json
+    body: {}
+    validate_certs: false
+    return_content: true
+    timeout: 10
+
+- name: Configure serial ports
+  uri:
+    url: "{{ base_url }}/ports"
+    method: PUT
+    headers:
+      Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
+    body_format: json
+    body: {}
+    validate_certs: false
+    return_content: true
+    timeout: 10
+
+- name: Configure TACACS
+  uri:
+    url: "{{ base_url }}/auth"
+    method: PUT
+    headers:
+      Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
+    body_format: json
+    body: {}
+    validate_certs: false
+    return_content: true
+    timeout: 10
+
+- name: Enable LLDP
+  uri:
+    url: "{{ base_url }}/services/lldp"
+    method: PUT
+    headers:
+      Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
+    body_format: json
+    body: {}
+    validate_certs: false
+    return_content: true
+    timeout: 10
+
+- name: Set web session timeout
+  uri:
+    url: "{{ base_url }}/system/webui_session_timeout"
+    method: PUT
+    headers:
+      Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
+    body_format: json
+    body: {}
+    validate_certs: false
+    return_content: true
+    timeout: 10
+
+- name: Enable brute force protection
+  uri:
+    url: "{{ base_url }}/services/brute_force_protection"
+    method: PUT
+    headers:
+      Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
+    body_format: json
+    body: {}
+    validate_certs: false
+    return_content: true
+    timeout: 10
+
+- name: Configure groups
+  uri:
+    url: "{{ base_url }}/groups"
+    method: PUT
+    headers:
+      Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
+    body_format: json
+    body: {}
+    validate_certs: false
+    return_content: true
+    timeout: 10
+
+- name: Configure users
+  uri:
+    url: "{{ base_url }}/users"
+    method: POST
+    headers:
+      Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
+    body_format: json
+    body: {}
+    validate_certs: false
+    return_content: true
+    timeout: 10
+
+- name: Get device model/version
+  uri:
+    url: "{{ base_url }}/system/version"
+    method: GET
+    headers:
+      Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
+    validate_certs: false
+    return_content: true
+    timeout: 10
+  register: version_info
+
+- name: Determine platform model
+  set_fact:
+    og_model: "{{ version_info.json.model | default('unknown') }}"
+
+- name: Set firewall physifs based on model
+  set_fact:
+    cellular_physif: >-
+      {{
+        'system_net_physifs-3'
+        if '1200' in og_model else
+        'system_net_physifs-12'
+      }}
+
+- name: Configure cellular firewall zone
+  uri:
+    url: "{{ base_url }}/firewall/zones/firewall_zones-3"
+    method: PUT
+    headers:
+      Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
+    body_format: json
+    body:
+      firewall_zone:
+        physifs:
+          - "{{ cellular_physif }}"
+        description: Default private Firewall Zone for the cellular interface
+        label: Cellular
+        id: firewall_zones-3
+        permit_all_traffic: true
+        name: cellular
+        masquerade: false
+    validate_certs: false
+    return_content: true
+    timeout: 10
+
 - name: Get WWAN config
   command: ogcli get physif wwan0
   register: wwan_config
