@@ -115,23 +115,23 @@
     headers:
       Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
     body_format: json
-        body:
-          auth:
-            ldapAuthenticationServers: []
-            tacacsService: "raccess"
-            ldapIgnoreReferrals: false
-            policy: "remotedownlocal"
-            radiusAuthenticationServers: []
-            tacacsMethod: "pap"
-            tacacsAuthenticationServers:
-              - port: 49
-                hostname: "10.49.80.11"
-              - port: 49
-                hostname: "10.50.110.11"
-            tacacsPassword: "linartbilvinlan"
-            tacacsAccountingEnabled: true
-            mode: "tacacs"
-            radiusAccountingServers: []
+    body:
+      auth:
+        ldapAuthenticationServers: []
+        tacacsService: "raccess"
+        ldapIgnoreReferrals: false
+        policy: "remotedownlocal"
+        radiusAuthenticationServers: []
+        tacacsMethod: "pap"
+        tacacsAuthenticationServers:
+          - port: 49
+            hostname: "10.49.80.11"
+          - port: 49
+            hostname: "10.50.110.11"
+        tacacsPassword: "linartbilvinlan"
+        tacacsAccountingEnabled: true
+        mode: "tacacs"
+        radiusAccountingServers: []
     validate_certs: false
     return_content: true
     timeout: 10
@@ -143,7 +143,14 @@
     headers:
       Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
     body_format: json
-    body: {}
+    body:
+      lldp:
+        enabled: true,
+        platform: "",
+        description: "",
+        physifs: []
+    }
+}
     validate_certs: false
     return_content: true
     timeout: 10
@@ -155,7 +162,9 @@
     headers:
       Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
     body_format: json
-    body: {}
+    body:
+      system_webui_session_timeout:
+        timeout: 120
     validate_certs: false
     return_content: true
     timeout: 10
@@ -167,34 +176,85 @@
     headers:
       Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
     body_format: json
-    body: {}
+    body:
+      brute_force_protection:
+        ssh_enabled: true
+        https_enabled: true
+        find_time: 1
+        max_retry: 5
+        ban_time: 60
     validate_certs: false
     return_content: true
     timeout: 10
 
-- name: Configure groups
+- name: Configure user groups
   uri:
     url: "{{ base_url }}/groups"
     method: PUT
     headers:
       Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
     body_format: json
-    body: {}
+    body:
+      groups:
+        - groupname: "APP_10933_OpengearUser_RD"
+          description: "Opengear user access"
+          role: "ConsoleUser"
+          rights:
+            delete: true
+            modify: true
+          ports:
+            - "port01"
+            - "port02"
+            - "port03"
+            - "port04"
+            - "port05"
+            - "port06"
+            - "port07"
+            - "port08"
+          mode: "global"
+          enabled: true
+          access_rights:
+            - "web_ui"
+            - "pmshell"
+
+        - groupname: "APP_10933_OpengearAdmin_CH"
+          description: "Opengear admin access"
+          role: "Administrator"
+          rights:
+            delete: true
+            modify: true
+          ports: []
+          mode: "global"
+          enabled: true
+          access_rights:
+            - "admin"
     validate_certs: false
     return_content: true
     timeout: 10
 
-- name: Configure users
+- name: Create SolarWinds read-only user
   uri:
     url: "{{ base_url }}/users"
     method: POST
     headers:
       Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
     body_format: json
-    body: {}
+    body:
+      users:
+        - username: "solarwindsro"
+          no_password: true
+          enabled: true
+          ssh_password_enabled: false
+          rights:
+            delete: false
+            modify: false
+          groups:
+            - "APP_10933_OpengearUser_RD"
     validate_certs: false
     return_content: true
     timeout: 10
+  register: user_result
+  failed_when: user_result.status not in [200, 400]
 
 - name: Get device model/version
   uri:
