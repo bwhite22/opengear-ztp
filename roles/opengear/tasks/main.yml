@@ -60,9 +60,9 @@
           - value: "{{ ntp_server | default('192.168.122.14') }}"
             key:
               value: wuw8Ewrlvot
-            index: 777
-            format: ASCII
-            algorithm: MD5
+              index: 777
+              format: ASCII
+              algorithm: MD5
     validate_certs: false
     return_content: true
     timeout: 10
