@@ -28,7 +28,7 @@
         address: "10.218.255.80"
         token: "USBUNDLE"
         bundle: "US-OOB-Bundle"
-        port: 443
+        port: "443"
     validate_certs: false
     return_content: true
     timeout: 10
