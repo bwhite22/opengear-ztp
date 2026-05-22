@@ -115,7 +115,23 @@
     headers:
       Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
     body_format: json
-    body: {}
+        body:
+          auth:
+            ldapAuthenticationServers: []
+            tacacsService: "raccess"
+            ldapIgnoreReferrals: false
+            policy: "remotedownlocal"
+            radiusAuthenticationServers: []
+            tacacsMethod: "pap"
+            tacacsAuthenticationServers:
+              - port: 49
+                hostname: "10.49.80.11"
+              - port: 49
+                hostname: "10.50.110.11"
+            tacacsPassword: "linartbilvinlan"
+            tacacsAccountingEnabled: true
+            mode: "tacacs"
+            radiusAccountingServers: []
     validate_certs: false
     return_content: true
     timeout: 10
