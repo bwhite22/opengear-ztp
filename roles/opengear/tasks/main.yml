@@ -75,7 +75,7 @@
       Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
     body_format: json
     body:
-      timezone: "{{ time-zone }}"
+      timezone: "{{ zone }}"
     validate_certs: false
     return_content: true
     timeout: 10
