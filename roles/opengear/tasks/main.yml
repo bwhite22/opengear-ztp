@@ -16,6 +16,18 @@
     return_content: true
     timeout: 10
 
+- name: Check Lighthouse enrollment status
+  uri:
+    url: "{{ base_url }}/lighthouse_enrollments"
+    method: GET
+    headers:
+      Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
+    validate_certs: false
+    return_content: true
+    timeout: 10
+  register: lh_status
+  failed_when: false
+
 - name: Enroll in Lighthouse
   uri:
     url: "{{ base_url }}/lighthouse_enrollments"
@@ -23,15 +35,16 @@
     headers:
       Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
     body_format: json
-    body:   
+    body:
       lighthouse_enrollment:
         address: "10.218.255.80"
         token: "USBUNDLE"
         bundle: "US-OOB-Bundle"
-        port: "443"
+        port: 443
     validate_certs: false
     return_content: true
     timeout: 10
+  when: lh_status.json is not defined or lh_status.json | length == 0
 
 - name: Configure NTP
   uri:
