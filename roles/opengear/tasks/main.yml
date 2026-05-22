@@ -108,18 +108,6 @@
     return_content: true
     timeout: 10
 
-- name: Configure serial ports
-  uri:
-    url: "{{ base_url }}/ports"
-    method: PUT
-    headers:
-      Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
-    body_format: json
-    body: {}
-    validate_certs: false
-    return_content: true
-    timeout: 10
-
 - name: Configure TACACS
   uri:
     url: "{{ base_url }}/auth"
