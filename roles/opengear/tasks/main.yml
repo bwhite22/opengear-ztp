@@ -88,7 +88,22 @@
     headers:
       Cookie: "session_id={{ hostvars['localhost']['api_token'] }}"
     body_format: json
-    body: {}
+    body:
+      snmpd:
+        priv_use_plaintext: true
+        security_name: "met-ro-user"
+        protocol: "UDP"
+        auth_password: "mes2tL1b0CV8zp57"
+        priv_protocol: "AES"
+        auth_protocol: "SHA"
+        priv_password: "p46wadjm1ke50VX8"
+        auth_use_plaintext: true
+        enable_secure_snmp: true
+        engine_id: "0x80001f8803555000000000"
+        port: 161
+        enabled: true
+        security_level: "priv"
+        enable_legacy_versions: false
     validate_certs: false
     return_content: true
     timeout: 10
